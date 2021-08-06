@@ -25,4 +25,20 @@ describe('RidesService', () => {
     expect(result).toBe('ride');
     expect(rideModelMock.create).toHaveBeenCalledWith({ distance: 10, startTime: '2021-08-06T15:30:00.000Z', duration: 3600, fare: 27 });
   });
+  it('should get rides', async () => {
+    rideModelMock.aggregate = jest.fn(async () => ['rides']);
+    const result = await service.getRides(10, 1);
+    expect(result).toBe('rides');
+    expect(rideModelMock.aggregate).toHaveBeenCalledWith([
+      { $sort: { startTime: -1 } },
+      { $facet: { rides: [{ $addFields: { _id: '$_id' } }], total: [{ $count: 'total' }] } },
+      { $unwind: '$total' },
+      {
+        $project: {
+          rides: { $slice: ['$rides', 0, 10] },
+          pagination: { numberOfDocuments: '$total.total', pageNumber: { $literal: 1 }, documentsPerPage: { $literal: 10 } }
+        }
+      }
+    ]);
+  });
 });

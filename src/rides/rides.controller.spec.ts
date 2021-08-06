@@ -22,4 +22,10 @@ describe('RidesController', () => {
     expect(result).toBe('ride');
     expect(ridesService.createRide).toHaveBeenCalledWith(1, 'startTime', 9000);
   });
+  it('should get rides', async () => {
+    jest.spyOn(ridesService, 'getRides').mockImplementationOnce(async () => 'rides' as any);
+    const result = await controller.getRides({ documentsPerPage: 10, pageNumber: 1 });
+    expect(result).toBe('rides');
+    expect(ridesService.getRides).toHaveBeenCalledWith(10, 1);
+  });
 });

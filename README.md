@@ -35,3 +35,9 @@ Para ver un reporte de cobertura de código de los tests unitarios se puede ejec
 ```bash
 $ npm run test:cov
 ```
+
+## Test funcionales
+Los test funcionales levantan el servicio y realizan peticiones POST y GET contra el mismo. Para poder ejecutarlos es necesario tener disponible una base de datos como la descrita anteriormente que debe estar limpia (sin datos previos, para que los resultados de las peticiones GET no sean distintos a los esperados) y además se deben definir las variables de entorno descritas en los el parrafos anteriores en el archivo `local.env`. Para ejecutarlos se debe usar el comando:
+```bash
+$ npm run test:functional
+ ```
