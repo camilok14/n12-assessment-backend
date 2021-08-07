@@ -41,3 +41,9 @@ Los test funcionales levantan el servicio y realizan peticiones POST y GET contr
 ```bash
 $ npm run test:functional
  ```
+
+ ## Imagen docker
+ Se ha publicado la imagen docker `camilok14/n12-assessment-backend` se puede ejecutar configurando sus variables y otorgando acceso a la correspondiente base de datos, por ejemplo, con la instrucción:
+ ```bash
+ $ docker run -it --network host -e MONGODB_URI='mongodb://localhost:27017/n12-assessment-database' camilok14/n12-assessment-backend
+ ```
