@@ -7,10 +7,16 @@ export class Ride {
   distance: number;
 
   /**
-   * Fecha en formato ISO8601
+   * Fecha de inicio del viaje en formato ISO8601
    */
   @Prop()
   startTime: string;
+
+  /**
+   * Fecha de fin del viaje en formato ISO8601
+   */
+   @Prop()
+   endTime: string;
 
   /**
    * Duración del viaje en segundos

@@ -7,6 +7,7 @@ import { Ride, RideDocument } from './schemas/ride.schema';
 @Injectable()
 export class RidesService {
   constructor(@InjectModel(Ride.name) private readonly rideModel: Model<RideDocument>) {}
+
   private readonly initialCharge = 1;
   private readonly ratePrice = 0.5;
   private readonly rateDistance = 0.2; // 1/5
@@ -27,6 +28,7 @@ export class RidesService {
     endDate.setSeconds(endDate.getSeconds() + duration);
     return endDate.toISOString();
   }
+
   public async createRide(distance: number, startTime: string, duration: number): Promise<RideDocument> {
     let fare = this.initialCharge + (distance / this.rateDistance) * this.ratePrice;
 
@@ -42,7 +44,7 @@ export class RidesService {
       }
       return acc + busyPeriod.fare;
     }, fare);
-    return await this.rideModel.create({ distance, startTime, duration, fare });
+    return await this.rideModel.create({ distance, startTime, endTime, duration, fare });
   }
   public async getRides(documentsPerPage: number, pageNumber: number): Promise<GetRidesBodyOutputDTO> {
     const [result] = await this.rideModel.aggregate([

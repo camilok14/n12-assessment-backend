@@ -13,7 +13,7 @@ describe('Functional tests', () => {
         duration: 300
       })
     ).data;
-    expect(result).toMatchObject({ distance: 2, startTime: '2021-08-06T13:00:00.000Z', duration: 300, fare: 6 });
+    expect(result).toMatchObject({ distance: 2, startTime: '2021-08-06T13:00:00.000Z', duration: 300, fare: 6, endTime: '2021-08-06T13:05:00.000Z' });
   });
   it('should create ride starting at 15.30 hrs during une hour so it gets into the afternoon busy period', async () => {
     const result = (
@@ -23,7 +23,13 @@ describe('Functional tests', () => {
         duration: 3600
       })
     ).data;
-    expect(result).toMatchObject({ distance: 10, startTime: '2021-08-06T15:30:00.000Z', duration: 3600, fare: 27 });
+    expect(result).toMatchObject({
+      distance: 10,
+      startTime: '2021-08-06T15:30:00.000Z',
+      duration: 3600,
+      fare: 27,
+      endTime: '2021-08-06T16:30:00.000Z'
+    });
   });
   it('should create ride starting during night period', async () => {
     const result = (
@@ -33,7 +39,7 @@ describe('Functional tests', () => {
         duration: 400
       })
     ).data;
-    expect(result).toMatchObject({ distance: 3, startTime: '2021-08-06T21:30:00.000Z', duration: 400, fare: 9 });
+    expect(result).toMatchObject({ distance: 3, startTime: '2021-08-06T21:30:00.000Z', duration: 400, fare: 9, endTime: '2021-08-06T21:36:40.000Z' });
   });
   it('should get paginated rides on page number 1', async () => {
     const { rides, pagination } = (
@@ -43,8 +49,8 @@ describe('Functional tests', () => {
     ).data;
     expect(pagination).toMatchObject({ pageNumber: 1, documentsPerPage: 2, numberOfDocuments: 3 });
     expect(rides).toMatchObject([
-      { distance: 3, startTime: '2021-08-06T21:30:00.000Z', duration: 400, fare: 9 },
-      { distance: 10, startTime: '2021-08-06T15:30:00.000Z', duration: 3600, fare: 27 }
+      { distance: 3, startTime: '2021-08-06T21:30:00.000Z', duration: 400, fare: 9, endTime: '2021-08-06T21:36:40.000Z' },
+      { distance: 10, startTime: '2021-08-06T15:30:00.000Z', duration: 3600, fare: 27, endTime: '2021-08-06T16:30:00.000Z' }
     ]);
   });
   it('should get paginated rides on page number 2', async () => {

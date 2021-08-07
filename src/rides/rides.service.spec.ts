@@ -17,19 +17,37 @@ describe('RidesService', () => {
     rideModelMock.create = jest.fn(async () => 'ride');
     const result = await service.createRide(2, '2021-08-06T19:00:00.000Z', 300);
     expect(result).toBe('ride');
-    expect(rideModelMock.create).toHaveBeenCalledWith({ distance: 2, startTime: '2021-08-06T19:00:00.000Z', duration: 300, fare: 6 });
+    expect(rideModelMock.create).toHaveBeenCalledWith({
+      distance: 2,
+      startTime: '2021-08-06T19:00:00.000Z',
+      duration: 300,
+      fare: 6,
+      endTime: '2021-08-06T19:05:00.000Z'
+    });
   });
   it('should create ride including a busy period', async () => {
     rideModelMock.create = jest.fn(async () => 'ride');
     const result = await service.createRide(10, '2021-08-06T15:30:00.000Z', 3600);
     expect(result).toBe('ride');
-    expect(rideModelMock.create).toHaveBeenCalledWith({ distance: 10, startTime: '2021-08-06T15:30:00.000Z', duration: 3600, fare: 27 });
+    expect(rideModelMock.create).toHaveBeenCalledWith({
+      distance: 10,
+      startTime: '2021-08-06T15:30:00.000Z',
+      duration: 3600,
+      fare: 27,
+      endTime: '2021-08-06T16:30:00.000Z'
+    });
   });
   it('should create ride during a busy period', async () => {
     rideModelMock.create = jest.fn(async () => 'ride');
     const result = await service.createRide(10, '2021-08-06T17:00:00.000Z', 3600);
     expect(result).toBe('ride');
-    expect(rideModelMock.create).toHaveBeenCalledWith({ distance: 10, startTime: '2021-08-06T17:00:00.000Z', duration: 3600, fare: 27 });
+    expect(rideModelMock.create).toHaveBeenCalledWith({
+      distance: 10,
+      startTime: '2021-08-06T17:00:00.000Z',
+      duration: 3600,
+      fare: 27,
+      endTime: '2021-08-06T18:00:00.000Z'
+    });
   });
   it('should get rides', async () => {
     rideModelMock.aggregate = jest.fn(async () => ['rides']);
