@@ -9,12 +9,13 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/main",
     "start:local": "cross-env NODE_ENV=local nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --no-fix",
-    "test:unit": "jest src/**",
-    "test:cov": "jest src/** --coverage",
-    "test:http": "wait-on http://localhost:3000/health && jest test/functional-tests.spec.ts",
+    "test:unit": "jest",
+    "test:cov": "jest --coverage",
+    "test:mutation": "stryker run",
+    "test:http": "wait-on http://localhost:3000/health && jest --config='test/jest-config.json'",
     "test:functional": "concurrently -k -s first 'npm:test:http' 'npm:start:local'"
   },
   "dependencies": {
@@ -34,6 +35,8 @@
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
+    "@stryker-mutator/core": "^5.3.0",
+    "@stryker-mutator/jest-runner": "^5.3.0",
     "@types/express": "^4.17.13",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.0.0",
@@ -61,12 +64,13 @@
       "json",
       "ts"
     ],
+    "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "src/**/*.(t|j)s"
+      "**/*.(t|j)s"
     ],
     "coveragePathIgnorePatterns": [
       ".module.ts",

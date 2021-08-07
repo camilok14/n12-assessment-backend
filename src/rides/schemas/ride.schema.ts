@@ -7,7 +7,7 @@ export class Ride {
   distance: number;
 
   /**
-   * Fecha en formato ISO
+   * Fecha en formato ISO8601
    */
   @Prop()
   startTime: string;

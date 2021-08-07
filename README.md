@@ -36,6 +36,13 @@ Para ver un reporte de cobertura de código de los tests unitarios se puede ejec
 $ npm run test:cov
 ```
 
+ ## Test de mutación
+ Realizan modificaciones en el código (mutantes) y ejecutan los test unitarios. Si los test unitarios pasan exitosamente se dice que los mutantes sobrevivieron, lo cual es indicación de que los test unitarios no eran tan buenos pues no cambian su resultado al modificar el código.
+ Se pueden ejecutar los test de mutación con la instrucción:
+ ```bash
+ $ npm run test:mutation
+ ```
+
 ## Test funcionales
 Los test funcionales levantan el servicio y realizan peticiones POST y GET contra el mismo. Para poder ejecutarlos es necesario tener disponible una base de datos como la descrita anteriormente que debe estar limpia (sin datos previos, para que los resultados de las peticiones GET no sean distintos a los esperados) y además se deben definir las variables de entorno descritas en los el parrafos anteriores en el archivo `local.env`. Para ejecutarlos se debe usar el comando:
 ```bash
@@ -47,3 +54,6 @@ $ npm run test:functional
  ```bash
  $ docker run -it --network host -e MONGODB_URI='mongodb://localhost:27017/n12-assessment-database' camilok14/n12-assessment-backend
  ```
+
+ ## Servicio desplegado
+ Es posible consumir el servicio desplegado en un ambiente disponible desde la URL `https://n12-assessment-backend.herokuapp.com`

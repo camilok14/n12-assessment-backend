@@ -11,22 +11,32 @@ export class RidesService {
   private readonly ratePrice = 0.5;
   private readonly rateDistance = 0.2; // 1/5
   private readonly busyPeriods = [
-    { startHours: 20, endHours: 6, fare: 0.5 },
-    { startHours: 16, endHours: 19, fare: 1 }
+    { startHours: 20, duration: 36000, fare: 0.5 }, // 20:00 hrs - 06:00 hrs
+    { startHours: 16, duration: 10800, fare: 1 } // 16:00 hrs - 19:00 hrs
   ];
+
+  /**
+   * Calcula la fecha de término de un período a partir de la fecha de inicio y la duración
+   * @param startTime Fecha del inicio del período en formato ISO8601
+   * @param duration  Cantidad de segundos que dura el período
+   *
+   * @returns         Fecha del fin del período en formato ISO08601
+   */
+  private getEndTime(startTime: string, duration: number): string {
+    const endDate = new Date(startTime);
+    endDate.setSeconds(endDate.getSeconds() + duration);
+    return endDate.toISOString();
+  }
   public async createRide(distance: number, startTime: string, duration: number): Promise<RideDocument> {
     let fare = this.initialCharge + (distance / this.rateDistance) * this.ratePrice;
 
-    const startDate = new Date(startTime);
-    const endDate = new Date(startTime);
-    endDate.setSeconds(startDate.getSeconds() + duration);
-    const endTime = endDate.toISOString();
+    const endTime = this.getEndTime(startTime, duration);
 
     fare = this.busyPeriods.reduce((acc, busyPeriod) => {
       const busyPeriodStartTime = `${startTime.substring(0, 10)}T${busyPeriod.startHours}:00:00.000Z`;
-      const busyPeriodEndtTime = `${startTime.substring(0, 10)}T${busyPeriod.endHours}:00:00.000Z`;
-      const rideIsBeforeBusyPeriod = startTime < busyPeriodStartTime && endTime < busyPeriodStartTime;
-      const rideIsAfterBusyPeriod = startTime >= busyPeriodEndtTime && endTime >= busyPeriodEndtTime;
+      const busyPeriodEndtTime = this.getEndTime(busyPeriodStartTime, busyPeriod.duration);
+      const rideIsBeforeBusyPeriod = endTime < busyPeriodStartTime;
+      const rideIsAfterBusyPeriod = startTime >= busyPeriodEndtTime;
       if (rideIsBeforeBusyPeriod || rideIsAfterBusyPeriod) {
         return acc;
       }
