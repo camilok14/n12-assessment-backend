@@ -71,6 +71,9 @@ export class RidesService {
         }
       }
     ]);
+    if (!result) {
+      return { pagination: { numberOfDocuments: 0, pageNumber, documentsPerPage }, rides: [] };
+    }
     return result;
   }
 }

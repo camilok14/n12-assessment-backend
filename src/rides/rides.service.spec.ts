@@ -65,4 +65,20 @@ describe('RidesService', () => {
       }
     ]);
   });
+  it('should get no rides', async () => {
+    rideModelMock.aggregate = jest.fn(async () => []);
+    const result = await service.getRides(10, 1);
+    expect(result).toMatchObject({ rides: [], pagination: { numberOfDocuments: 0, pageNumber: 1, documentsPerPage: 10 } });
+    expect(rideModelMock.aggregate).toHaveBeenCalledWith([
+      { $sort: { startTime: -1 } },
+      { $facet: { rides: [{ $addFields: { _id: '$_id' } }], total: [{ $count: 'total' }] } },
+      { $unwind: '$total' },
+      {
+        $project: {
+          rides: { $slice: ['$rides', 0, 10] },
+          pagination: { numberOfDocuments: '$total.total', pageNumber: { $literal: 1 }, documentsPerPage: { $literal: 10 } }
+        }
+      }
+    ]);
+  });
 });
