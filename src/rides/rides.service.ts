@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { BusyPeriod } from './dto/busy-period.dto';
 import { GetRidesBodyOutputDTO } from './dto/get-rides.dto';
 import { Ride, RideDocument } from './schemas/ride.schema';
 
@@ -11,9 +12,9 @@ export class RidesService {
   private readonly initialCharge = 1;
   private readonly ratePrice = 0.5;
   private readonly rateDistance = 0.2; // 1/5
-  private readonly busyPeriods = [
-    { startHours: 20, duration: 36000, fare: 0.5 }, // 20:00 hrs - 06:00 hrs
-    { startHours: 16, duration: 10800, fare: 1 } // 16:00 hrs - 19:00 hrs
+  private readonly busyPeriods: BusyPeriod[] = [
+    { startHours: '20', endHours: '06', duration: 36000, fare: 0.5 },
+    { startHours: '16', endHours: '19', duration: 10800, fare: 1 }
   ];
 
   /**
@@ -29,14 +30,27 @@ export class RidesService {
     return endDate.toISOString();
   }
 
+  private getbusyPeriodRange(rideStartTime: string, busyPeriod: BusyPeriod): { busyPeriodStartTime: string; busyPeriodEndtTime: string } {
+    let busyPeriodStartTime = `${rideStartTime.substring(0, 10)}T${busyPeriod.startHours}:00:00.000Z`;
+    const busyPeriodIsDuringNight = busyPeriod.startHours > busyPeriod.endHours;
+    const rideStartHours = rideStartTime.substring(11, 13);
+    const rideIsDuringNight = rideStartHours <= busyPeriod.endHours;
+    if (busyPeriodIsDuringNight && rideIsDuringNight) {
+      const busyPeriodStartDate = new Date(busyPeriodStartTime);
+      busyPeriodStartDate.setDate(busyPeriodStartDate.getDate() - 1);
+      busyPeriodStartTime = busyPeriodStartDate.toISOString();
+    }
+    const busyPeriodEndtTime = this.getEndTime(busyPeriodStartTime, busyPeriod.duration);
+    return { busyPeriodStartTime, busyPeriodEndtTime };
+  }
+
   public async createRide(distance: number, startTime: string, duration: number): Promise<RideDocument> {
     let fare = this.initialCharge + (distance / this.rateDistance) * this.ratePrice;
 
     const endTime = this.getEndTime(startTime, duration);
 
     fare = this.busyPeriods.reduce((acc, busyPeriod) => {
-      const busyPeriodStartTime = `${startTime.substring(0, 10)}T${busyPeriod.startHours}:00:00.000Z`;
-      const busyPeriodEndtTime = this.getEndTime(busyPeriodStartTime, busyPeriod.duration);
+      const { busyPeriodStartTime, busyPeriodEndtTime } = this.getbusyPeriodRange(startTime, busyPeriod);
       const rideIsBeforeBusyPeriod = endTime < busyPeriodStartTime;
       const rideIsAfterBusyPeriod = startTime >= busyPeriodEndtTime;
       if (rideIsBeforeBusyPeriod || rideIsAfterBusyPeriod) {
